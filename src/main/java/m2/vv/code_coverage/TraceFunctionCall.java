@@ -26,43 +26,62 @@ public class TraceFunctionCall {
 
 		ClassPool pool = ClassPool.getDefault();
 
-//		final String folder = "/home/jeremy/Programmation/java/stack/target/classes/";
-//		try {
-//			pool.appendClassPath(folder);
-//		} catch (NotFoundException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//
-//		CtClass functions = null;
-//		try {
-//			functions = pool.get("java.lang.String");
-//		} catch (NotFoundException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//
-//		for (CtMethod method : functions.getDeclaredMethods()) {
-//			String instruction = String.format("{System.out.println(\"%s\");}",
-//					method.getName() + method.getMethodInfo().getDescriptor());
-//			try {
-//				method.insertBefore(instruction);
-//			} catch (CannotCompileException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		try {
-//			functions.writeFile(folder);
-//		} catch (CannotCompileException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		final String folder = "/home/jeremy/Programmation/java/stack/target/classes/";
+		final String testFolder = "/home/jeremy/Programmation/java/stack/target/test-classes/";
+		
+		try {
+			pool.appendClassPath(folder);
+			pool.appendClassPath(testFolder);
+		} catch (NotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		CtClass testFunctions = null;
+		CtClass functions = null;
+		try {
+			testFunctions = pool.get("samples.BoundedStackTest");
+			functions = pool.get("samples.BoundedStack");
+		} catch (NotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		for (CtMethod method : testFunctions.getDeclaredMethods()) {
+			String instruction = String.format("{System.out.println(\"%s\");}",
+					"*" + method.getName());
+			try {
+				method.insertBefore(instruction);
+			} catch (CannotCompileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}	
 
+		for (CtMethod method : functions.getDeclaredMethods()) {
+
+			String instruction = String.format("{System.out.println(\"%s\");}",
+					"-" + method.getName() + " ;");
+			try {
+				method.insertBefore(instruction);
+			} catch (CannotCompileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+
+		try {
+			functions.writeFile(folder);
+			testFunctions.writeFile(testFolder);
+		} catch (CannotCompileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		Class<?> boundedStackTestClass = ucl.loadClass("samples.BoundedStackTest");
+				
 		Result result = core.run(boundedStackTestClass);
 		for (Failure failure : result.getFailures()) {
 			System.out.println("| FAILURE: " + failure.getTrace());
