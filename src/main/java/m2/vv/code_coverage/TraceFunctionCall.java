@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -19,10 +23,12 @@ import javassist.NotFoundException;
 public class TraceFunctionCall {
 
 	public static void main(String[] args) throws MalformedURLException, ClassNotFoundException {
-		
+		args = new String [1];
+		args[0] = "/home/boby/Bureau/testing-tutorial-master";
+		// checks if the agument is well formed
 		if( args.length != 1 )
 		{
-			System.out.println("Error we need a maeven projrct path as parameter");
+			System.out.println("Error we need a maeven project path as parameter");
 			System.exit(-1);
 		}
 		String projectPath = args[0];
@@ -41,6 +47,25 @@ public class TraceFunctionCall {
 			System.exit( -1 );
 		}
 		
+		// create the collections of class and test class
+		Collection<File> filesClass = FileUtils.listFiles( new File(classTarget), null, true);
+		List<String> classList = new ArrayList<>();
+		System.out.println("classList: ");
+		filesClass.forEach( file -> {
+			System.out.println(file.getAbsolutePath( ).replaceAll(projectPath+"/target/classes/", "").replaceAll("/", ".").replaceAll(".class",""));
+			classList.add(file.getAbsolutePath( ).replaceAll(projectPath+"/target/classes/", "").replaceAll("/", ".").replaceAll(".class",""));
+		});
+		
+		System.out.println("testList: ");
+		Collection<File> testFiles = FileUtils.listFiles( new File(projectPath+"/target/test-classes"), null, true);
+		List<String> testList = new ArrayList<>();
+		testFiles.forEach( file -> {
+			System.out.println(file.getAbsolutePath().replaceAll( projectPath+"/target/test-classes/", "").replaceAll("/", ".").replaceAll(".class", ""));
+			testList.add( file.getAbsolutePath().replaceAll( projectPath+"/target/test-classes/", "").replaceAll("/", ".").replaceAll(".class", ""));
+		});
+		
+		
+		//System.exit(0);
 		JUnitCore core = new JUnitCore();
 		URL classUrl = new URL("file://"+ args[0]+"/target/classes/");
 		URL testUrl = new URL("file://"+ args[0]+"/target/test-classes/");
@@ -49,8 +74,8 @@ public class TraceFunctionCall {
 		
 		ClassPool pool = ClassPool.getDefault();
 		
-		final String folder = args[0]+"/target/classes/";
-		final String testFolder = args[0]+"/target/test-classes/";
+		final String folder = projectPath+"/target/classes/";
+		final String testFolder = projectPath+"/target/test-classes/";
 		
 		try {
 			pool.appendClassPath(folder);
@@ -59,21 +84,30 @@ public class TraceFunctionCall {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		TraceFunctionCall.trace(pool, folder, testFolder, "samples.BoundedStack", "samples.BoundedStackTest");
-		
-		Class<?> boundedStackTestClass = ucl.loadClass("samples.BoundedStackTest");
-				
-		Result result = core.run(boundedStackTestClass);
-		for (Failure failure : result.getFailures()) {
-			System.out.println("| FAILURE: " + failure.getTrace());
-		}
 
-		System.out.println("FINISHED");
-		System.out.println(String.format("| IGNORED: %d", result.getIgnoreCount()));
-		System.out.println(String.format("| FAILURES: %d", result.getFailureCount()));
-		System.out.println(String.format("| RUN: %d", result.getRunCount()));
+		for( String classFile : classList)
+		{
+			if( testList.contains( classFile+"Test" ) )
+			{
+				trace(pool, folder, testFolder, classFile, classFile);
+			}
+		}
 		
+		for( String test: testList )
+		{
+			Class<?> testClass = ucl.loadClass(test);
+			
+			Result result = core.run(testClass);
+			for (Failure failure : result.getFailures()) {
+				System.out.println("| FAILURE: " + failure.getTrace());
+			}
+
+			System.out.println("FINISHED");
+			System.out.println(String.format("| IGNORED: %d", result.getIgnoreCount()));
+			System.out.println(String.format("| FAILURES: %d", result.getFailureCount()));
+			System.out.println(String.format("| RUN: %d", result.getRunCount()));
+		}
+			
 	}
 	
 	/**
@@ -95,7 +129,7 @@ public class TraceFunctionCall {
 		}
 		String instruction1 = "";
 		instruction1 += "{java.io.BufferedWriter writer;}";
-		instruction1 += "{writer = new java.io.BufferedWriter(new java.io.FileWriter.FileWriter(\"/home/jeremy/VVTest.txt\"));}";
+		instruction1 += "{writer = new java.io.BufferedWriter(new java.io.FileWriter.FileWriter(\"/home/boby/VVTest.txt\"));}";
 		instruction1 += "{writer.write(\"Coucou\");";
 		instruction1 += "{writer.close();}";
 		
@@ -117,15 +151,7 @@ public class TraceFunctionCall {
 			try {
 				CtClass[] types = method.getParameterTypes();
 				System.out.print(method.getName() + " " + types.length + "\n");
-				int i = 0;
-//				for(CtClass type: types) {
-					 if ( types.length == 1 && types[0].isPrimitive()) {
-						 instruction2 += "{System.out.println(\"ici\"+ $1 );}" ;
-                     } else {
-                         instruction2 += "{System.out.println( System.identityHashCode( $args[" + i + "] ) ) ;}" ;
-                     }
-//					 i++;
-//				}
+				
 				method.insertBefore(instruction2);
 			} catch (NotFoundException e1) {
 				// TODO Auto-generated catch block
