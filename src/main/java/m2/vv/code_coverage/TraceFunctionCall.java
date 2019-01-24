@@ -1,7 +1,11 @@
 package m2.vv.code_coverage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -24,8 +28,9 @@ public class TraceFunctionCall {
 
 	public static void main(String[] args) throws MalformedURLException, ClassNotFoundException {
 		args = new String [1];
-		args[0] = "/home/boby/Bureau/testing-tutorial-master";
-		// checks if the agument is well formed
+		args[0] = "/home/jeremy/Programmation/java/stack";
+//		args[0] = "/home/boby/Bureau/testing-tutorial-master";
+		// checks if the argument is well formed
 		if( args.length != 1 )
 		{
 			System.out.println("Error we need a maeven project path as parameter");
@@ -76,7 +81,7 @@ public class TraceFunctionCall {
 		
 		final String folder = projectPath+"/target/classes/";
 		final String testFolder = projectPath+"/target/test-classes/";
-		
+		final String outputFile = projectPath+"/TraceFunction.txt";
 		try {
 			pool.appendClassPath(folder);
 			pool.appendClassPath(testFolder);
@@ -84,20 +89,25 @@ public class TraceFunctionCall {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
+		
 		for( String classFile : classList)
 		{
 			if( testList.contains( classFile+"Test" ) )
 			{
-				trace(pool, folder, testFolder, classFile, classFile);
+				trace(pool, folder, classFile, "-");
 			}
 		}
 		
+		// save the default print stream to restore it later
+		PrintStream oldPrintStream = System.out;
+		
 		for( String test: testList )
 		{
+			trace(pool, testFolder, test, "*");
 			Class<?> testClass = ucl.loadClass(test);
-			
+			consoleRedirection(outputFile);
 			Result result = core.run(testClass);
+			consoleRedirection(oldPrintStream);
 			for (Failure failure : result.getFailures()) {
 				System.out.println("| FAILURE: " + failure.getTrace());
 			}
@@ -107,73 +117,38 @@ public class TraceFunctionCall {
 			System.out.println(String.format("| FAILURES: %d", result.getFailureCount()));
 			System.out.println(String.format("| RUN: %d", result.getRunCount()));
 		}
-			
+		
 	}
 	
 	/**
-	 * @param pool contains the tested class and the test class
-	 * @param folder path folder to the tested class
-	 * @param testFolder path folder to the test class
+	 * @param pool contains the class
+	 * @param folder path folder to the class
+	 * @param packageName name of the package class
+	 * @param prefixe keyword
 	 */
-	public static  void trace(ClassPool pool, String folder, String testFolder, String packageClass, String packageTest) {
-		
-		CtClass testFunctions = null;
+	public static  void trace(ClassPool pool, String folder, String packageName, String prefixe) {
 		CtClass functions = null;		
 		
 		try {
-			testFunctions = pool.get(packageTest);
-			functions = pool.get(packageClass);
+			functions = pool.get(packageName);
 		} catch (NotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		String instruction1 = "";
-		instruction1 += "{java.io.BufferedWriter writer;}";
-		instruction1 += "{writer = new java.io.BufferedWriter(new java.io.FileWriter.FileWriter(\"/home/boby/VVTest.txt\"));}";
-		instruction1 += "{writer.write(\"Coucou\");";
-		instruction1 += "{writer.close();}";
 		
-		for (CtMethod method : testFunctions.getDeclaredMethods()) {
-			String instruction = String.format("{System.out.println(\"%s\");}",
-					"*" + method.getName());
-			try {
-				//method.insertBefore(instruction1);
-				method.insertBefore(instruction);
-			} catch (CannotCompileException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}	
-		
-		String instruction2 = "";
 		for (CtMethod method : functions.getDeclaredMethods()) {
-
+			String instructionLog = String.format("{System.out.println(\"%s\");}",
+					prefixe + method.getName() + " ;");
 			try {
-				CtClass[] types = method.getParameterTypes();
-				System.out.print(method.getName() + " " + types.length + "\n");
-				
-				method.insertBefore(instruction2);
-			} catch (NotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (CannotCompileException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String instruction = String.format("{System.out.println(\"%s\");}",
-					"-" + method.getName() + " ;");
-			try {
-				method.insertBefore(instruction);
+				method.insertBefore(instructionLog);
 			} catch (CannotCompileException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		
-
 		try {
 			functions.writeFile(folder);
-			testFunctions.writeFile(testFolder);
 		} catch (CannotCompileException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -183,4 +158,27 @@ public class TraceFunctionCall {
 		}
 	}
 
+	/**
+	 * Redirection the System.out into the outputPath
+	 * @param outputPath where is redirect the System.out
+	 */
+	public static void consoleRedirection(String outputPath) {
+		PrintStream out;
+		try {
+			out = new PrintStream(
+					new FileOutputStream(outputPath, false));
+			System.setOut(out);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Redirect the System.out into the newPrintStream
+	 * @param newPrintStream where is redirect the System.out
+	 */
+	public static void consoleRedirection(PrintStream newPrintStream) {
+		System.setOut(newPrintStream);
+	}
 }
