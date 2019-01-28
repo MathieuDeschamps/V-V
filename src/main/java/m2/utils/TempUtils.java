@@ -59,7 +59,7 @@ public class TempUtils {
 		
 		
 		this.copyPath = "/tmp/"+projectPath;
-		return "/tmp/"+projectPath;
+		return "/tmp"+projectPath;
 	}
 	
 	/**
