@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import m2.exceptions.CopyException;
 import m2.exceptions.DeleteTmpException;
+import m2.exceptions.WrongMaevenProjectException;
 
 
 /**
@@ -24,28 +25,28 @@ public class TempUtils {
 	 * @param projectPath the maeven's path to copy
 	 * @return the path of the copy
 	 * @throws CopyException if copy command get wrong
+	 * @throws WrongMaevenProjectException 
 	 */
-	public String copyTarget( String projectPath ) throws CopyException{
+	public String copyTarget( String projectPath ) throws CopyException, WrongMaevenProjectException{
 	
 		File maevenDirectory = new File( projectPath );
 		if( !(maevenDirectory.exists( ) && maevenDirectory.isDirectory( ) ) )
 		{
-			System.out.println("The project path passed is not valid");
-			System.exit(-1);
+			throw new WrongMaevenProjectException("Directory does not exist");
 			
 		}
 		String classTarget  = projectPath +"/target/classes";
 		File classesDirectory = new File( classTarget );
 		if( ! (classesDirectory.exists( ) && classesDirectory.isDirectory( ) ) ){
 			
-			System.out.println( "Target classes are missing");
-			System.exit( -1 );
+			throw new WrongMaevenProjectException( "Target classes directory is missing");
+		
 		}
 		 String testTarget = projectPath + "/target/test-classes";
 		 File testClassesDirectory = new File( testTarget );
 		 if( ! (testClassesDirectory.exists( ) && testClassesDirectory.isDirectory( ) ) ){
-			 System.out.println("Target test-classes is not valid");
-			 System.exit( -1 );
+			 
+			 throw new WrongMaevenProjectException("Target test classes directory is missing");
 			 
 		 }
 		 

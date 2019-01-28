@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="m2.ihm.MainController">
+  <children>
+      <VBox prefHeight="759.0" prefWidth="800.0">
+         <children>
+            <SplitPane dividerPositions="0.3" prefHeight="459.0" prefWidth="800.0">
+               <items>
+                  <ScrollPane fx:id="listPane" prefHeight="450.0" prefWidth="265.0" SplitPane.resizableWithParent="false">
+                     <content>
+                        <ListView fx:id="list" prefHeight="453.0" prefWidth="239.0" />
+                     </content>
+                  </ScrollPane>
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0" SplitPane.resizableWithParent="false" />
+               </items>
+            </SplitPane>
+            <HBox prefHeight="155.0" prefWidth="800.0">
+               <children>
+                  <Button fx:id="loadButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="137.0" text="Button">
+                     <HBox.margin>
+                        <Insets left="20.0" top="60.0" />
+                     </HBox.margin>
+                  </Button>
+                  <VBox prefHeight="154.0" prefWidth="353.0">
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Label text="Tests OK :">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="okLabel" text="Label">
+                                 <HBox.margin>
+                                    <Insets left="41.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Label text="Tests KO :">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="koLabel" text="Label">
+                                 <HBox.margin>
+                                    <Insets left="40.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <Label text="Tests ignored: ">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="ignoreLabel" text="Label">
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets top="30.0" />
+                     </HBox.margin>
+                  </VBox>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+  </children>
+</VBox>
