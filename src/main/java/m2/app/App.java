@@ -5,17 +5,22 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import m2.ihm.MainController;
 
 public class App  extends Application{
 
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("../ihm/MainIhm.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("../ihm/MainIhm.fxml"));
+			Parent root = (Parent) loader.load();
 			Scene scene = new Scene(root,800,600);
+			MainController controller = (MainController)loader.getController( );
+			controller.setStage(primaryStage);
+			primaryStage.setResizable(false);
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("vv Project");
-			primaryStage.show();	
+			primaryStage.show();		
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

@@ -12,19 +12,18 @@
   <children>
       <VBox prefHeight="759.0" prefWidth="800.0">
          <children>
-            <Pane prefHeight="448.0" prefWidth="800.0" />
+            <SplitPane dividerPositions="0.3" prefHeight="459.0" prefWidth="800.0">
+               <items>
+                  <ScrollPane fx:id="listPane" prefHeight="450.0" prefWidth="265.0" SplitPane.resizableWithParent="false">
+                     <content>
+                        <ListView fx:id="list" prefHeight="453.0" prefWidth="239.0" />
+                     </content>
+                  </ScrollPane>
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0" SplitPane.resizableWithParent="false" />
+               </items>
+            </SplitPane>
             <HBox prefHeight="155.0" prefWidth="800.0">
                <children>
-                  <Label prefHeight="167.0" prefWidth="99.0" text="Project path:">
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
-                  </Label>
-                  <TextField fx:id="path" alignment="BOTTOM_CENTER" prefHeight="31.0" prefWidth="171.0">
-                     <HBox.margin>
-                        <Insets top="60.0" />
-                     </HBox.margin>
-                  </TextField>
                   <Button fx:id="loadButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="137.0" text="Button">
                      <HBox.margin>
                         <Insets left="20.0" top="60.0" />
