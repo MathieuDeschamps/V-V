@@ -3,6 +3,8 @@ package m2.utils;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+
 import m2.exceptions.CopyException;
 import m2.exceptions.DeleteTmpException;
 import m2.exceptions.WrongMaevenProjectException;
@@ -50,16 +52,20 @@ public class TempUtils {
 			 
 		 }
 		 
+		 String home = System.getProperty("user.home");
 		 try {
-			Runtime.getRuntime().exec("cp -R "+projectPath+"/target /tmp/"+projectPath);
+			 
+			 FileUtils.copyDirectory(new File(projectPath+"/target"), new File(home+"/tmp"+projectPath));
+			 System.out.println("cp -R "+projectPath+"/target "+home+"/tmp"+projectPath);
+			Runtime.getRuntime().exec("cp -R "+projectPath+"/target "+home+"/tmp"+projectPath);
 		} catch (IOException e) {
 			throw new CopyException( e.getMessage( ) );
 			
 		}
 		
 		
-		this.copyPath = "/tmp/"+projectPath;
-		return "/tmp"+projectPath;
+		this.copyPath = home+"/tmp"+projectPath;
+		return home+"/tmp"+projectPath;
 	}
 	
 	/**

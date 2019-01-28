@@ -44,7 +44,7 @@ public class TraceFunctionCall {
 		File maevenDirectory = new File( projectPath );
 		if( !(maevenDirectory.exists( ) && maevenDirectory.isDirectory( ) ) )
 		{
-			System.out.println("The path passed as argument is not valid");
+			System.out.println("The path passed as argument is not valid\n"+maevenDirectory.getAbsolutePath());
 			System.exit(-1);
 			
 		}
