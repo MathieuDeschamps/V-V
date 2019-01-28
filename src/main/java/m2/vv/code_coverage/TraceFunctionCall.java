@@ -23,21 +23,25 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import m2.model.ProjectModel;
 
 public class TraceFunctionCall {
 
-	public static void main(String[] args) throws MalformedURLException, ClassNotFoundException {
-		args = new String [1];
-		args[0] = "/home/jeremy/Programmation/java/stack";
-//		args[0] = "/home/boby/Bureau/testing-tutorial-master";
-		// checks if the argument is well formed
-		if( args.length != 1 )
+	private ProjectModel projectModel;
+	public TraceFunctionCall( ProjectModel projectModel ){
+		
+		this.projectModel = projectModel;
+	}
+	
+	public void process(String path) throws MalformedURLException, ClassNotFoundException {
+		
+		if( path == null )
 		{
 			System.out.println("Error we need a maeven project path as parameter");
 			System.exit(-1);
 		}
-		String projectPath = args[0];
-		File maevenDirectory = new File( args[0]);
+		String projectPath = path;
+		File maevenDirectory = new File( projectPath );
 		if( !(maevenDirectory.exists( ) && maevenDirectory.isDirectory( ) ) )
 		{
 			System.out.println("The path passed as argument is not valid");
@@ -72,8 +76,8 @@ public class TraceFunctionCall {
 		
 		//System.exit(0);
 		JUnitCore core = new JUnitCore();
-		URL classUrl = new URL("file://"+ args[0]+"/target/classes/");
-		URL testUrl = new URL("file://"+ args[0]+"/target/test-classes/");
+		URL classUrl = new URL("file://"+ projectPath+"/target/classes/");
+		URL testUrl = new URL("file://"+ projectPath+"/target/test-classes/");
 		URL[] classUrls = { classUrl, testUrl };
 		URLClassLoader ucl = new URLClassLoader(classUrls);
 		

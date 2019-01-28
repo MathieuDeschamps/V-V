@@ -1,5 +1,6 @@
 package m2.ihm;
 import java.io.File;
+import java.net.MalformedURLException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -13,7 +14,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import m2.exceptions.CopyException;
 import m2.exceptions.WrongMaevenProjectException;
+import m2.model.ProjectModel;
 import m2.utils.TempUtils;
+import m2.vv.code_coverage.TraceFunctionCall;
 
 /**
  * 
@@ -40,11 +43,15 @@ public class MainController {
 	private Stage stage;
 	final DirectoryChooser dirChooser =  new DirectoryChooser();
 	private TempUtils tempUtils;
+	private ProjectModel projectModel;
+	private TraceFunctionCall traceFunction;
 	
 	
 	@FXML
 	private void initialize(){
 		
+		projectModel = new ProjectModel();
+		traceFunction = new TraceFunctionCall(projectModel);
 		tempUtils = new TempUtils();
 		okLabel.setText("");
 		koLabel.setText("");
@@ -58,6 +65,7 @@ public class MainController {
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setHeight(800);
 			alert.setWidth(600);
+			boolean error = false;
 			try {
 				tempUtils.copyTarget( dir.getAbsolutePath( ) );
 			} catch (WrongMaevenProjectException e) {
@@ -66,13 +74,24 @@ public class MainController {
 				alert.setTitle("Erreur");
 				alert.setContentText("Le dossier selectionné n'est pas un project maeven valide.\n"+e.getMessage( ));
 				alert.showAndWait();
+				error = true;
 
 			} catch (CopyException e) {
 				alert.setAlertType( AlertType.ERROR);
 				alert.setTitle("Erreur");
 				alert.setContentText("Une erreur est survenu lors du chargement du projet.\n"+e.getMessage( ));
 				alert.showAndWait();
+				error = true;
 				
+			}
+			if( !error )
+			{
+				try {
+					traceFunction.process( tempUtils.getCopyPath( ) );
+				} catch (MalformedURLException | ClassNotFoundException e) {
+					alert.setAlertType( AlertType.ERROR);
+					alert.setContentText("Une erreur est survenue: "+e.getMessage( ) );
+				}
 			}
 		});
 	}
