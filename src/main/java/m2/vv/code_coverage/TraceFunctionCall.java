@@ -1,6 +1,7 @@
 package m2.vv.code_coverage;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -23,6 +24,11 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import javassist.bytecode.MethodInfo;
+import javassist.expr.ConstructorCall;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
+import m2.utils.ConsoleUtils;
 import m2.model.ProjectModel;
 
 public class TraceFunctionCall {
@@ -44,7 +50,9 @@ public class TraceFunctionCall {
 		File maevenDirectory = new File( projectPath );
 		if( !(maevenDirectory.exists( ) && maevenDirectory.isDirectory( ) ) )
 		{
-			System.out.println("The path passed as argument is not valid\n"+maevenDirectory.getAbsolutePath());
+
+			System.out.println("The path passed as argument is not valid");
+			System.out.println("The invalid path is: " + path);
 			System.exit(-1);
 			
 		}
@@ -86,6 +94,7 @@ public class TraceFunctionCall {
 		final String folder = projectPath+"/target/classes/";
 		final String testFolder = projectPath+"/target/test-classes/";
 		final String outputFile = projectPath+"/TraceFunction.txt";
+		final String traceFile = projectPath+"Trace.txt";
 		try {
 			pool.appendClassPath(folder);
 			pool.appendClassPath(testFolder);
@@ -98,7 +107,7 @@ public class TraceFunctionCall {
 		{
 			if( testList.contains( classFile+"Test" ) )
 			{
-				trace(pool, folder, classFile, "-");
+				trace(pool, folder, classFile, "-", traceFile);
 			}
 		}
 		
@@ -107,11 +116,11 @@ public class TraceFunctionCall {
 		
 		for( String test: testList )
 		{
-			trace(pool, testFolder, test, "*");
+			trace(pool, testFolder, test, "*", traceFile);
 			Class<?> testClass = ucl.loadClass(test);
-			consoleRedirection(outputFile);
+			ConsoleUtils.redirect(outputFile);
 			Result result = core.run(testClass);
-			consoleRedirection(oldPrintStream);
+			ConsoleUtils.redirect(oldPrintStream);
 			for (Failure failure : result.getFailures()) {
 				System.out.println("| FAILURE: " + failure.getTrace());
 			}
@@ -130,7 +139,7 @@ public class TraceFunctionCall {
 	 * @param packageName name of the package class
 	 * @param prefixe keyword
 	 */
-	public static  void trace(ClassPool pool, String folder, String packageName, String prefixe) {
+	public static  void trace(ClassPool pool, String folder, String packageName, String prefixe, String output) {
 		CtClass functions = null;		
 		
 		try {
@@ -141,6 +150,35 @@ public class TraceFunctionCall {
 		}
 		
 		for (CtMethod method : functions.getDeclaredMethods()) {
+			try {
+					method.instrument(new ExprEditor() {
+						String tab = "";			
+						File file = new File(output);
+						FileWriter fw = new FileWriter(file);
+						public void edit(MethodCall m) throws CannotCompileException {
+							PrintStream old = System.out;
+							tab += "-";
+							String trace = tab + m.getClassName() + "." + m.getMethodName() + " " + m.getSignature();
+							try {
+								fw.write(trace);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							System.out.println(trace);
+							tab = tab.substring(0, tab.length());
+						}
+					});
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();			
+			} catch (CannotCompileException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			String instructionLog = String.format("{System.out.println(\"%s\");}",
 					prefixe + method.getName() + " ;");
 			try {
@@ -162,27 +200,5 @@ public class TraceFunctionCall {
 		}
 	}
 
-	/**
-	 * Redirection the System.out into the outputPath
-	 * @param outputPath where is redirect the System.out
-	 */
-	public static void consoleRedirection(String outputPath) {
-		PrintStream out;
-		try {
-			out = new PrintStream(
-					new FileOutputStream(outputPath, false));
-			System.setOut(out);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Redirect the System.out into the newPrintStream
-	 * @param newPrintStream where is redirect the System.out
-	 */
-	public static void consoleRedirection(PrintStream newPrintStream) {
-		System.setOut(newPrintStream);
-	}
+
 }
