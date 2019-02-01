@@ -24,19 +24,22 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-import javassist.bytecode.MethodInfo;
 import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 import m2.utils.ConsoleUtils;
+import m2.model.Edge;
+import m2.model.Graph;
 import m2.model.Model;
+import m2.model.Node;
 import m2.model.ProjectModel;
 
 public class TraceFunctionCall {
 
 	private ProjectModel projectModel;
+	private Graph graph;
 	public TraceFunctionCall( ProjectModel projectModel ){
-		
+		this.graph = new Graph();
 		this.projectModel = projectModel;
 	}
 	
@@ -131,7 +134,8 @@ public class TraceFunctionCall {
 			System.out.println(String.format("| IGNORED: %d", result.getIgnoreCount()));
 			System.out.println(String.format("| FAILURES: %d", result.getFailureCount()));
 			System.out.println(String.format("| RUN: %d", result.getRunCount()));
-			Model model = new Model(test, result.getRunCount(), result.getFailureCount(), result.getIgnoreCount(), "");
+			System.out.println("Graph:" +this.graph.toDot());
+			Model model = new Model(test, result.getRunCount(), result.getFailureCount(), result.getIgnoreCount(), this.graph.toDot());
 			this.projectModel.addModel(model);
 		}
 	}
@@ -142,11 +146,12 @@ public class TraceFunctionCall {
 	 * @param packageName name of the package class
 	 * @param prefixe keyword
 	 */
-	public static  void trace(ClassPool pool, String folder, String packageName, String prefixe, String output) {
-		CtClass functions = null;		
+	public void trace(ClassPool pool, String folder, String packageName, String prefixe, String output) {
+		CtClass functions = null;
 		
 		try {
 			functions = pool.get(packageName);
+			this.graph.setName(functions.getName());
 		} catch (NotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -154,12 +159,17 @@ public class TraceFunctionCall {
 		
 		for (CtMethod method : functions.getDeclaredMethods()) {
 			try {
+					TraceFunctionCall that = this;
 					method.instrument(new ExprEditor() {
 						String tab = "";			
 						public void edit(MethodCall m) throws CannotCompileException {
 							//tab += "-";
-							String trace = tab + m.getClassName() + "." + m.getMethodName() + " " + m.getSignature();
+							
+							String trace = method.getName() + "->" +  m.getClassName() + "." + m.getMethodName() + " " + m.getSignature();
+//							String trace = tab + method.getName() + "->" +  m.getClassName() + "." + m.getMethodName() + " " + m.getSignature();
+							that.addToGraph(method, m);
 							PrintStream old = System.out;
+							
 							//ConsoleUtils.redirect(output);
 							//System.out.println(trace);
 							//ConsoleUtils.redirect(old);
@@ -170,16 +180,21 @@ public class TraceFunctionCall {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+			int beginLine = method.getMethodInfo().getLineNumber(0) - 1;
+			
+			method.getMethodInfo().getLineNumber(0);
 			String instructionLogin = String.format("{System.out.println(\"%s\");}",
 					prefixe +"Enter:" + method.getName() + " ;");
 			
 			String instructionLogout = String.format("{System.out.println(\"%s\");}", prefixe + "Exit:" + method.getName() +" ;");
 			try {
+				
 				method.insertBefore(instructionLogin);
 			} catch (CannotCompileException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 		
 		try {
@@ -191,6 +206,14 @@ public class TraceFunctionCall {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	
+	public void addToGraph(CtMethod method, MethodCall methodCall) {
+		Node firstNode = new Node(method.getName());
+		Node secondNode = new Node(methodCall.getMethodName());
+		Edge edge = new Edge(firstNode, secondNode, true);
+		this.graph.addEdge(edge);
 	}
 
 
