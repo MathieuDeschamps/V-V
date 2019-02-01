@@ -29,6 +29,7 @@ import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 import m2.utils.ConsoleUtils;
+import m2.model.Model;
 import m2.model.ProjectModel;
 
 public class TraceFunctionCall {
@@ -94,7 +95,7 @@ public class TraceFunctionCall {
 		final String folder = projectPath+"/target/classes/";
 		final String testFolder = projectPath+"/target/test-classes/";
 		final String outputFile = projectPath+"/TraceFunction.txt";
-		final String traceFile = projectPath+"Trace.txt";
+		final String traceFile = projectPath+"/Trace.txt";
 		try {
 			pool.appendClassPath(folder);
 			pool.appendClassPath(testFolder);
@@ -118,19 +119,20 @@ public class TraceFunctionCall {
 		{
 			trace(pool, testFolder, test, "*", traceFile);
 			Class<?> testClass = ucl.loadClass(test);
-			ConsoleUtils.redirect(outputFile);
+			//ConsoleUtils.redirect(outputFile);
 			Result result = core.run(testClass);
-			ConsoleUtils.redirect(oldPrintStream);
+			//ConsoleUtils.redirect(oldPrintStream);
 			for (Failure failure : result.getFailures()) {
 				System.out.println("| FAILURE: " + failure.getTrace());
 			}
 
-			System.out.println("FINISHED");
+			System.out.println("FINISHED" + test);
 			System.out.println(String.format("| IGNORED: %d", result.getIgnoreCount()));
 			System.out.println(String.format("| FAILURES: %d", result.getFailureCount()));
 			System.out.println(String.format("| RUN: %d", result.getRunCount()));
+			Model model = new Model(test, result.getRunCount(), result.getFailureCount(), result.getIgnoreCount(), "");
+			this.projectModel.addModel(model);
 		}
-		
 	}
 	
 	/**
@@ -153,36 +155,26 @@ public class TraceFunctionCall {
 			try {
 					method.instrument(new ExprEditor() {
 						String tab = "";			
-						File file = new File(output);
-						FileWriter fw = new FileWriter(file);
 						public void edit(MethodCall m) throws CannotCompileException {
-							PrintStream old = System.out;
-							tab += "-";
+							//tab += "-";
 							String trace = tab + m.getClassName() + "." + m.getMethodName() + " " + m.getSignature();
-							try {
-								fw.write(trace);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							System.out.println(trace);
+							PrintStream old = System.out;
+							//ConsoleUtils.redirect(output);
+							//System.out.println(trace);
+							//ConsoleUtils.redirect(old);
 							tab = tab.substring(0, tab.length());
 						}
 					});
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();			
 			} catch (CannotCompileException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			String instructionLog = String.format("{System.out.println(\"%s\");}",
-					prefixe + method.getName() + " ;");
+			String instructionLogin = String.format("{System.out.println(\"%s\");}",
+					prefixe +"Enter:" + method.getName() + " ;");
+			
+			String instructionLogout = String.format("{System.out.println(\"%s\");}", prefixe + "Exit:" + method.getName() +" ;");
 			try {
-				method.insertBefore(instructionLog);
+				method.insertBefore(instructionLogin);
 			} catch (CannotCompileException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
