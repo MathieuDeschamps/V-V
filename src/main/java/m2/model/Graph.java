@@ -11,6 +11,7 @@ public class Graph {
 	public Graph() {
 		super();
 		edges = new ArrayList<>();
+		name = "untitled";
 	}
 	
 	public void setName(String name) {
@@ -27,13 +28,13 @@ public class Graph {
 		result += this.name;
 		result += "{\n";
 		for(Edge edge : edges) {
-			result += edge.getFirstNode().getName();
+			result +=  '"' + edge.getFirstNode().getName() + '"';
 			if(edge.isOriented()) {
 				result += " -> ";
 			}else {
 				result += " -- ";
 			}
-			result +=  edge.getSecondNode().getName();
+			result += '"' + edge.getSecondNode().getName() + '"';
 			result += ";\n";
 		}
 		result += "\n}";

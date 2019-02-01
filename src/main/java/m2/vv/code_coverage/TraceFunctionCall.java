@@ -37,10 +37,12 @@ import m2.model.ProjectModel;
 public class TraceFunctionCall {
 
 	private ProjectModel projectModel;
-	private Graph graph;
+	private List<Graph> graphs;
+	private String trace;
 	public TraceFunctionCall( ProjectModel projectModel ){
-		this.graph = new Graph();
+		this.graphs = new ArrayList<Graph>();
 		this.projectModel = projectModel;
+		this.trace = "";
 	}
 	
 	public void process(String path) throws MalformedURLException, ClassNotFoundException {
@@ -111,7 +113,19 @@ public class TraceFunctionCall {
 		{
 			if( testList.contains( classFile+"Test" ) )
 			{
-				trace(pool, folder, classFile, "-", traceFile);
+				try {
+					Graph graph = new Graph();
+					graph.setName(classFile);
+					CtMethod[] classMethods;
+					classMethods = pool.get(classFile).getDeclaredMethods();
+					buildGraph(graph, classMethods);
+					graphs.add(graph);
+					// trace is call after build graph otherwise return error
+					trace(pool, classFile, folder, "-", traceFile);
+				} catch (NotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -120,11 +134,23 @@ public class TraceFunctionCall {
 		
 		for( String test: testList )
 		{
-			trace(pool, testFolder, test, "*", traceFile);
+			CtMethod[] testMethods;
+			try {
+				testMethods = pool.get(test).getDeclaredMethods();
+				Graph graph = new Graph();
+				graph.setName(test);
+				buildGraph(graph, testMethods);
+				graphs.add(graph);
+				// trace is call after build graph otherwise return error
+				trace(pool, test, testFolder, "*", traceFile);
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Class<?> testClass = ucl.loadClass(test);
-			//ConsoleUtils.redirect(outputFile);
+			ConsoleUtils.redirect(outputFile);
 			Result result = core.run(testClass);
-			//ConsoleUtils.redirect(oldPrintStream);
+			ConsoleUtils.redirect(oldPrintStream);
 			for (Failure failure : result.getFailures()) {
 				System.out.println("| FAILURE: " + failure.getTrace());
 			}
@@ -133,8 +159,14 @@ public class TraceFunctionCall {
 			System.out.println(String.format("| IGNORED: %d", result.getIgnoreCount()));
 			System.out.println(String.format("| FAILURES: %d", result.getFailureCount()));
 			System.out.println(String.format("| RUN: %d", result.getRunCount()));
-			System.out.println("Graph:" +this.graph.toDot());
-			Model model = new Model(test, result.getRunCount(), result.getFailureCount(), result.getIgnoreCount(), this.graph.toDot());
+			String toDot;
+			System.out.println("Graph:\n");	
+			for(Graph graph: graphs) {
+				toDot = graph.toDot();
+				System.out.println(toDot + '\n');
+				this.trace += toDot;
+			}
+			Model model = new Model(test, result.getRunCount(), result.getFailureCount(), result.getIgnoreCount(), this.trace);
 			this.projectModel.addModel(model);
 		}
 	}
@@ -145,55 +177,25 @@ public class TraceFunctionCall {
 	 * @param packageName name of the package class
 	 * @param prefixe keyword
 	 */
-	public void trace(ClassPool pool, String folder, String packageName, String prefixe, String output) {
+	public static void trace(ClassPool pool, String packageName, String folder, String prefixe, String output) {
 		CtClass functions = null;
-		
 		try {
 			functions = pool.get(packageName);
-			this.graph.setName(functions.getName());
 		} catch (NotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		for (CtMethod method : functions.getDeclaredMethods()) {
-			try {
-					TraceFunctionCall that = this;
-					method.instrument(new ExprEditor() {
-						String tab = "";			
-						public void edit(MethodCall m) throws CannotCompileException {
-							//tab += "-";
-							
-							String trace = method.getName() + "->" +  m.getClassName() + "." + m.getMethodName() + " " + m.getSignature();
-//							String trace = tab + method.getName() + "->" +  m.getClassName() + "." + m.getMethodName() + " " + m.getSignature();
-							that.addToGraph(method, m);
-							PrintStream old = System.out;
-							
-							//ConsoleUtils.redirect(output);
-							//System.out.println(trace);
-							//ConsoleUtils.redirect(old);
-							tab = tab.substring(0, tab.length());
-						}
-					});
-			} catch (CannotCompileException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			int beginLine = method.getMethodInfo().getLineNumber(0) - 1;
-			
-			method.getMethodInfo().getLineNumber(0);
+		CtMethod[] methods = functions.getDeclaredMethods();
+		for (CtMethod method : methods) {
 			String instructionLogin = String.format("{System.out.println(\"%s\");}",
-					prefixe +"Enter:" + method.getName() + " ;");
+					prefixe + method.getName() + " ;");
 			
-			String instructionLogout = String.format("{System.out.println(\"%s\");}", prefixe + "Exit:" + method.getName() +" ;");
-			try {
-				
+			try {	
 				method.insertBefore(instructionLogin);
 			} catch (CannotCompileException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			
+			}			
 		}
 		
 		try {
@@ -207,12 +209,38 @@ public class TraceFunctionCall {
 		}
 	}
 
+	/**
+	 * Build a graph form methods
+	 * @param graph
+	 * @param mehtods
+	 * @return
+	 */
+	public static  Graph buildGraph(Graph graph, CtMethod[] methods) {
+		if(graph == null) {
+			return new Graph();
+		}
+		for (CtMethod method : methods) {
+			try {
+					method.instrument(new ExprEditor() {
+						String tab = "";			
+						public void edit(MethodCall m) throws CannotCompileException {
+							addToGraph(graph, method, m);							
+						}
+					});
+			} catch (CannotCompileException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}		
+			
+		}
+		return graph;
+	}
 	
-	public void addToGraph(CtMethod method, MethodCall methodCall) {
+	public static void addToGraph(Graph graph, CtMethod method, MethodCall methodCall) {
 		Node firstNode = new Node(method.getName());
 		Node secondNode = new Node(methodCall.getMethodName());
 		Edge edge = new Edge(firstNode, secondNode, true);
-		this.graph.addEdge(edge);
+		graph.addEdge(edge);
 	}
 
 
