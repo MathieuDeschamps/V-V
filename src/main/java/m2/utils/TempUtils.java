@@ -75,6 +75,7 @@ public class TempUtils {
 	public void deleteCopy( ) throws DeleteTmpException{
 		
 		try {
+			System.out.println(copyPath);
 			Runtime.getRuntime().exec("rm -R "+this.copyPath );
 		} catch (IOException e) {
 			throw new DeleteTmpException( e.getMessage( ) );
