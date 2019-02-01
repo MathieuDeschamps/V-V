@@ -63,12 +63,13 @@ public class TraceFunctionCall {
 			
 		}
 		String classTarget  = projectPath +"/target/classes";
-		File classesDirectory = new File( classTarget );
+		/*File classesDirectory = new File( classTarget );
+		System.out.println("tralala: "+classTarget);
 		if( ! (classesDirectory.exists( ) && classesDirectory.isDirectory( ) ) ){
 			
 			System.out.println( "Target classes are missing");	
 			System.exit( -1 );
-		}
+		}*/
 		
 		// create the collections of class and test class
 		Collection<File> filesClass = FileUtils.listFiles( new File(classTarget), null, true);

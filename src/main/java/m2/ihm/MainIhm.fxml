@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -19,7 +20,10 @@
                         <ListView fx:id="list" prefHeight="453.0" prefWidth="239.0" />
                      </content>
                   </ScrollPane>
-                  <ScrollPane prefHeight="200.0" prefWidth="200.0" SplitPane.resizableWithParent="false" />
+                  <ScrollPane prefHeight="200.0" prefWidth="200.0" SplitPane.resizableWithParent="false">
+                     <content>
+                        <TextArea fx:id="trace" prefHeight="448.0" prefWidth="551.0" />
+                     </content></ScrollPane>
                </items>
             </SplitPane>
             <HBox prefHeight="155.0" prefWidth="800.0">
@@ -78,6 +82,7 @@
                         <Insets top="30.0" />
                      </HBox.margin>
                   </VBox>
+                  <PieChart fx:id="pie" prefHeight="150.0" prefWidth="294.0" />
                </children>
             </HBox>
          </children>

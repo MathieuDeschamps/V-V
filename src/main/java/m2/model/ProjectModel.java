@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 
  * @author DESCHAMPS Mathieu && ESNAULT Jeremie
+ * 
  *
  */
 public class ProjectModel {
@@ -23,6 +25,11 @@ public class ProjectModel {
 	 public Model getModel( String fileName )
 	 {
 		 return classTestMap.get( fileName );
+	 }
+	 
+	 public Set<String> getclassTestNames( )
+	 {
+		 return classTestMap.keySet();
 	 }
 	
 

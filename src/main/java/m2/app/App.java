@@ -17,6 +17,7 @@ public class App  extends Application{
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("../ihm/MainIhm.fxml"));
 			Parent root = (Parent) loader.load();
 			Scene scene = new Scene(root,800,600);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			controller = (MainController)loader.getController( );
 			controller.setStage(primaryStage);
 			primaryStage.setResizable(false);
