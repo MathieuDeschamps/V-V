@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import m2.exceptions.CopyException;
+import m2.exceptions.DeleteTmpException;
 import m2.exceptions.WrongMaevenProjectException;
 import m2.model.ProjectModel;
 import m2.utils.TempUtils;
@@ -102,6 +103,10 @@ public class MainController {
 		dirChooser.setTitle(DIR_CHOOSER_TITLE);
 		dirChooser.setInitialDirectory( new File( System.getProperty("user.home")));
 		
+	}
+	
+	public void clean( ) throws DeleteTmpException{
+		tempUtils.deleteCopy();
 	}
 
 	public void setStage(Stage stage )
