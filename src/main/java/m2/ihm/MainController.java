@@ -3,18 +3,21 @@ import java.io.File;
 import java.net.MalformedURLException;
 
 import javafx.fxml.FXML;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import m2.exceptions.CopyException;
 import m2.exceptions.DeleteTmpException;
 import m2.exceptions.WrongMaevenProjectException;
+import m2.model.Model;
 import m2.model.ProjectModel;
 import m2.utils.TempUtils;
 import m2.vv.code_coverage.TraceFunctionCall;
@@ -41,6 +44,10 @@ public class MainController {
 	ScrollPane listPane;
 	@FXML
 	ListView<String> list;
+	@FXML
+	TextArea trace;
+	@FXML
+	PieChart pie;
 	private Stage stage;
 	final DirectoryChooser dirChooser =  new DirectoryChooser();
 	private TempUtils tempUtils;
@@ -60,6 +67,23 @@ public class MainController {
 		loadButton.setText("Load");
 		listPane.setContent(list);
 		configureDirChooser( dirChooser );
+		
+		list.getSelectionModel().selectedItemProperty().addListener( obs -> {
+			Model model = projectModel.getModel(list.getSelectionModel().selectedItemProperty().getValue());
+			okLabel.setText( ""+model.getnOkTest());
+			koLabel.setText( ""+model.getnKoTest() );
+			ignoreLabel.setText(""+model.getnIgnoredTest());
+			trace.setEditable(true);
+			trace.setText( model.getExecutionTrace());
+			trace.setEditable(false);
+			System.out.println(list.getSelectionModel().selectedItemProperty().getValue());
+			//pie = new PieChart();
+			pie.getData().clear();
+			pie.getData().add( new PieChart.Data("OK", model.getnOkTest()));
+			pie.getData().add( new PieChart.Data("KO", model.getnKoTest()));
+			pie.getData().add( new PieChart.Data("Ignored", model.getnIgnoredTest()));
+		});
+		
 		loadButton.setOnAction( (event)->{			
 						
 			File dir = dirChooser.showDialog(stage);
@@ -89,6 +113,7 @@ public class MainController {
 			{
 				try {
 					traceFunction.process( tempUtils.getCopyPath( ) );
+					list.getItems().setAll(projectModel.getclassTestNames());
 				} catch (MalformedURLException | ClassNotFoundException e) {
 					alert.setAlertType( AlertType.ERROR);
 					alert.setContentText("Une erreur est survenue: "+e.getMessage( ) );
