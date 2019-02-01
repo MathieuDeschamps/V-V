@@ -142,7 +142,7 @@ public class TraceFunctionCall {
 	 * @param prefixe keyword
 	 */
 	public static  void trace(ClassPool pool, String folder, String packageName, String prefixe, String output) {
-		CtClass functions = null;		
+		CtClass functions = null;
 		
 		try {
 			functions = pool.get(packageName);
@@ -175,6 +175,7 @@ public class TraceFunctionCall {
 			String instructionLogout = String.format("{System.out.println(\"%s\");}", prefixe + "Exit:" + method.getName() +" ;");
 			try {
 				method.insertBefore(instructionLogin);
+				method.getMethodInfo().getLineNumber(0);
 			} catch (CannotCompileException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
