@@ -16,7 +16,11 @@
 	</properties>
 
 	<dependencies>
-
+		<dependency>
+		    <groupId>guru.nidi</groupId>
+		    <artifactId>graphviz-java</artifactId>
+		    <version>0.8.0</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -38,6 +42,7 @@
 			<artifactId>commons-io</artifactId>
 			<version>1.3.2</version>
 		</dependency>
+		
 	</dependencies>
 
 	<build>

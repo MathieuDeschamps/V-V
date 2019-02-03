@@ -1,5 +1,10 @@
 package m2.model;
-
+/**
+ * 
+ * @author DESCHAMPS Mathieu && ESNAULT Jeremie
+ *
+ * Edge class which represent an edge of a Graph
+ */
 public class Edge<T> {
 
 	private Node<T> firstNode;
