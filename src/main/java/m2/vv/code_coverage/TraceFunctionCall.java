@@ -41,15 +41,15 @@ import m2.model.ProjectModel;
 
 public class TraceFunctionCall {
 	
-	private final static char SEP_SECTION = '#';
-	private final static char PRE_TEST = '*';
-	private final static char PRE_CLASS = '-';
+	public final static char SEP_SECTION = '#';
+	public final static char PRE_TEST = '*';
+	public final static char PRE_CLASS = '-';
 	// Separator between package name and class name
-	private final static char SEP_PACK_CLASS = '.';
+	public final static char SEP_PACK_CLASS = '.';
 	// Separator between class name and method name
-	private final static char SEP_CLASS_METHOD = '+';
+	public final static char SEP_CLASS_METHOD = '+';
 	// Separator between method call
-	private final static char SEP_METHOD_CALL = '\n';
+	public final static char SEP_METHOD_CALL = '\n';
 
 	private ProjectModel projectModel;
 	private List<Edge<MethodModel>> allEdges;
@@ -164,7 +164,9 @@ public class TraceFunctionCall {
 			ConsoleUtils.redirect(oldPrintStream);
 
 			trace = readTrace(outputFile);
-			List<Graph<MethodModel>> graphedTrace = parseTrace(trace);
+			System.out.println(trace);
+			ParseFunctionCall parser = new ParseFunctionCall(allEdges, trace);
+			List<Graph<MethodModel>> graphedTrace = parser.process();
 
 			System.out.println("FINISHED" + test);
 			System.out.println(String.format("| IGNORED: %d", result.getIgnoreCount()));
@@ -174,7 +176,7 @@ public class TraceFunctionCall {
 			for (Graph<MethodModel> graph : graphedTrace) {
 				toDot += graph.toDot();
 			}
-			System.out.println("Graph:\n" + toDot);
+			System.out.println("GRAPH:\n" + toDot);
 			Model model = new Model(test, result.getRunCount(), result.getFailureCount(), result.getIgnoreCount(),
 					toDot);
 			this.projectModel.addModel(model);
@@ -276,70 +278,6 @@ public class TraceFunctionCall {
 		return content;
 	}
 
-	private List<Graph<MethodModel>> parseTrace(String trace) {
-		List<Graph<MethodModel>> graphedTrace = new ArrayList<>();
-		System.out.println("trace" + trace);
-		String[] testSections = trace.split("\\" + SEP_SECTION);
-		Graph<MethodModel> newGraph;
-		Stack<MethodModel> functionCallStack = new Stack<>();
-		for (String testTrace : testSections) {
-			String[] methodSections = testTrace.split(""+SEP_METHOD_CALL);
-			newGraph = new Graph<>();
-			for(String methodSection : methodSections) {
-				if(methodSection.equals("")){
-					// Do nothing
-				}else if (methodSection.charAt(0) == PRE_TEST) {
-					newGraph = parseTestMethod(newGraph, functionCallStack, methodSection);
-					// if parseTestMethod not failed add the new graph
-					if(!functionCallStack.isEmpty()) {
-						graphedTrace.add(newGraph);						
-					}
-				} else if (methodSection.charAt(0) == PRE_CLASS) {
-					Edge<MethodModel> newEdge = parseClassMethod(functionCallStack, methodSection);
-					if(newEdge != null) {
-						newGraph.addEdge(newEdge);
-					}
-				}
-			}
-		}
-		return graphedTrace;
-	}
-
-	private Graph<MethodModel> parseTestMethod(Graph<MethodModel> graph, Stack<MethodModel> functionCallStack, String methodLine){
-		int beginClassName = methodLine.indexOf(SEP_PACK_CLASS) + 1;
-		int endClassName = methodLine.indexOf(SEP_CLASS_METHOD);
-		int beginMethodName = methodLine.indexOf(SEP_CLASS_METHOD) + 1;
-
-		if (beginClassName != -1 && endClassName != -1 && beginMethodName != -1) {
-			String className = methodLine.substring(beginClassName, endClassName);
-			String methodName = methodLine.substring(beginMethodName);
-
-			functionCallStack.empty();
-			functionCallStack.add(new MethodModel(methodName, className, null, null));
-
-			graph.setName(methodName);
-		}
-		return graph;
-	}
 	
-	private Edge<MethodModel> parseClassMethod(Stack<MethodModel> functionCallStack, String methodLine) {
-		int beginClassName = methodLine.indexOf(SEP_PACK_CLASS) + 1;
-		int endClassName = methodLine.indexOf(SEP_CLASS_METHOD);
-		int beginMethodName = methodLine.indexOf(SEP_CLASS_METHOD) + 1;
-
-		if (beginClassName != -1 && endClassName != -1 && beginMethodName != -1) {
-			String className = methodLine.substring(beginClassName, endClassName);
-			String methodName = methodLine.substring(beginMethodName);
-
-			MethodModel classMethod = new MethodModel(methodName, className, null, null);
-			Node<MethodModel> firstNode = new Node<>(functionCallStack.pop());
-			Node<MethodModel> secondNode = new Node<>(classMethod);
-			Edge<MethodModel> edge = new Edge<>(firstNode, secondNode, true);
-			functionCallStack.add(classMethod);
-			return edge;
-		}else {
-			return null;					
-		}
-		
-	}
+	
 }
