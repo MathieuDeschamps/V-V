@@ -3,10 +3,10 @@ package m2.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Graph {
+public class Graph<T> {
 	
 	private String name;
-	private List<Edge> edges;
+	private List<Edge<T>> edges;
 
 	public Graph() {
 		super();
@@ -18,7 +18,7 @@ public class Graph {
 		this.name = name;
 	}
 	
-	public void addEdge(Edge edge) {
+	public void addEdge(Edge<T> edge) {
 		this.edges.add(edge);
 	}
 	
@@ -28,13 +28,13 @@ public class Graph {
 		result += this.name;
 		result += "{\n";
 		for(Edge edge : edges) {
-			result +=  '"' + edge.getFirstNode().getName() + '"';
+			result +=  '"' + edge.getFirstNode().getValue().toString() + '"';
 			if(edge.isOriented()) {
 				result += " -> ";
 			}else {
 				result += " -- ";
 			}
-			result += '"' + edge.getSecondNode().getName() + '"';
+			result += '"' + edge.getSecondNode().getValue().toString() + '"';
 			result += ";\n";
 		}
 		result += "\n}";

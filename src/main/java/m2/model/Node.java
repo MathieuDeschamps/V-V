@@ -1,20 +1,20 @@
 package m2.model;
 
-public class Node {
+public class Node<T> {
 	
-	private String name;
+	private T value;
 
-	public Node(String name) {
+	public Node(T value) {
 		super();
-		this.name = name;
+		this.value = value;
 	}
 
-	public String getName() {
-		return name;
+	public T getValue() {
+		return value;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setValue(T value) {
+		this.value = value;
 	}
 	
 	
