@@ -1,7 +1,6 @@
 package m2.vv.code_coverage;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -27,11 +26,11 @@ public class ParseFunctionCall {
 		}
 	}
 	
+	/**
+	 * Parse the trace
+	 * @return list of graph, one for each test method 
+	 */
 	public List<Graph<MethodModel>> process(){
-		return parseTrace();
-	}
-	
-	private List<Graph<MethodModel>> parseTrace() {
 		List<Graph<MethodModel>> graphedTrace = new ArrayList<>();
 		String[] testSections = trace.split("\\" + TraceFunctionCall.SEP_SECTION);
 		Graph<MethodModel> newGraph;
@@ -59,7 +58,14 @@ public class ParseFunctionCall {
 		}
 		return graphedTrace;
 	}
-
+	
+	/**
+	 * Parse the methodLine to retrieve a graph based on the methodLine data
+	 * @param graph which will contains the methodLine data parsed
+	 * @param functionCallStack which contains the stack of all the called method
+	 * @param methodLine the string to parse
+	 * @return graph with the parse data from methodLine
+	 */
 	private Graph<MethodModel> parseTestMethod(Graph<MethodModel> graph, Stack<MethodModel> functionCallStack, String methodLine){
 		int beginClassName = 1;
 		int endClassName = methodLine.indexOf(TraceFunctionCall.SEP_CLASS_METHOD);
@@ -76,7 +82,12 @@ public class ParseFunctionCall {
 		}
 		return graph;
 	}
-	
+	/**
+	 * Parse the methodLine to retrieve a edge based on the functionCallStack
+	 * @param functionCallStack which contains the stack of all the called method
+	 * @param methodLine the string to parse
+	 * @return edge with the parse data from methodLine
+	 */
 	private Edge<MethodModel> parseClassMethod(Stack<MethodModel> functionCallStack, String methodLine) {
 		int beginClassName = 1;
 		int endClassName = methodLine.indexOf(TraceFunctionCall.SEP_CLASS_METHOD);
@@ -93,7 +104,12 @@ public class ParseFunctionCall {
 			return null;					
 		}	
 	}
-	
+	/**
+	 * Find the edge which match with functionCall stack and the methodCalled in allEdge
+	 * @param functionCallStack which contains the stack of all the called method
+	 * @param methodCalled 
+	 * @return the edge which matching otherwise null
+	 */
 	private Edge<MethodModel> matchEdge(Stack<MethodModel> functionCallStack, MethodModel methodCalled ){
 		// callingMethod, which call the method called
 		boolean isMatching =false;

@@ -245,9 +245,10 @@ public class TraceFunctionCall {
 	}
 
 	/**
-	 * @param method
-	 * @param methodCall
-	 * @return
+	 * make a oriented edge
+	 * @param method which will be the first node of the edge
+	 * @param methodCall which will be the second node of the edge
+	 * @return a oriented edge
 	 */
 	private static Edge<MethodModel> makeEdge(CtMethod method, MethodCall methodCall) {
 		Node<MethodModel> firstNode = new Node<>(MethodModel.parseMethodModel(method));
@@ -256,6 +257,11 @@ public class TraceFunctionCall {
 		return edge;
 	}
 
+	/**
+	 * Read a trace file
+	 * @param outputFile where the trace file is saved
+	 * @return the content of the trace file
+	 */
 	private String readTrace(String outputFile) {
 		StringBuilder builder = new StringBuilder();
 		String line = "";
