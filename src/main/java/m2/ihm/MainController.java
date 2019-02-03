@@ -113,6 +113,7 @@ public class MainController {
 			{
 				try {
 					traceFunction.process( tempUtils.getCopyPath( ) );
+					list.getItems().clear();
 					list.getItems().setAll(projectModel.getclassTestNames());
 				} catch (MalformedURLException | ClassNotFoundException e) {
 					alert.setAlertType( AlertType.ERROR);

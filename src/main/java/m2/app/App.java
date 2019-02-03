@@ -29,7 +29,7 @@ public class App  extends Application{
 		}
 	}
 	
-	@Override
+	@Override	
 	public void stop(){
 		try {
 			controller.clean();
