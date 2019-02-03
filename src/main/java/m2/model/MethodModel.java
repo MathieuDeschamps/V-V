@@ -51,17 +51,17 @@ public class MethodModel {
 			return false;
 		}
 		MethodModel mm = (MethodModel) o;
-		if(parameters.size() != mm.parameters.size()) {
-			return false;
-		}
-		for(int i = 0; i < parameters.size(); i++) {
-			if(!parameters.get(i).equals(mm.parameters.get(i))) {
-				return false;
-			}
-		}
+//		if(parameters.size() != mm.parameters.size()) {
+//			return false;
+//		}
+//		for(int i = 0; i < parameters.size(); i++) {
+//			if(!parameters.get(i).equals(mm.parameters.get(i))) {
+//				return false;
+//			}
+//		}
 		return name.equals(mm.name) &&
-			className.equals(mm.className) &&
-			returnType.equals(mm.returnType);
+//			returnType.equals(mm.returnType) &&
+			className.equals(mm.className);
 				
 	}
 	
