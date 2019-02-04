@@ -62,7 +62,7 @@ public class Graph<T> {
 	 */
 	public BufferedImage toImage( )
 	{		
-		return null;
-		//return Graphviz.fromString( this.toString( ) ).render(Format.PNG).toImage();
+		//return null;
+		return Graphviz.fromString( this.toDot( ) ).render(Format.PNG).toImage();
 	}
 }
