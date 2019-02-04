@@ -1,8 +1,15 @@
 package m2.ihm;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -12,7 +19,12 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import m2.exceptions.CopyException;
 import m2.exceptions.DeleteTmpException;
@@ -43,16 +55,20 @@ public class MainController {
 	@FXML
 	ScrollPane listPane;
 	@FXML
+	ListView<String> images;
+	@FXML
 	ListView<String> list;
 	@FXML
 	TextArea trace;
 	@FXML
 	PieChart pie;
+	
 	private Stage stage;
 	final DirectoryChooser dirChooser =  new DirectoryChooser();
 	private TempUtils tempUtils;
 	private ProjectModel projectModel;
 	private TraceFunctionCall traceFunction;
+	private Model selectedModel;
 	
 	
 	@FXML
@@ -70,6 +86,9 @@ public class MainController {
 		
 		list.getSelectionModel().selectedItemProperty().addListener( obs -> {
 			Model model = projectModel.getModel(list.getSelectionModel().selectedItemProperty().getValue());
+			selectedModel = model;
+			images.getItems().clear();
+			images.getItems().setAll( model.getImages().keySet());
 			okLabel.setText( ""+model.getnOkTest());
 			koLabel.setText( ""+model.getnKoTest() );
 			ignoreLabel.setText(""+model.getnIgnoredTest());
@@ -101,6 +120,21 @@ public class MainController {
 					break;
 				}
 			}
+		});
+		
+		images.getSelectionModel().selectedItemProperty().addListener( obs -> {
+			BufferedImage image = selectedModel.getImages().get( images.getSelectionModel().selectedItemProperty().getValue());
+			Image img = SwingFXUtils.toFXImage(image, null);
+			final Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(this.stage);
+            VBox dialogVbox = new VBox(20);
+            Scene dialogScene = new Scene(dialogVbox, img.getWidth(), img.getHeight());
+            dialog.setTitle("Execution graph");
+            ImageView imgView = new  ImageView(img);
+            dialogVbox.getChildren().add(imgView);
+            dialog.setScene(dialogScene);
+            dialog.show();
 		});
 		
 		loadButton.setOnAction( (event)->{			

@@ -9,21 +9,26 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<VBox prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="m2.ihm.MainController">
+<VBox prefHeight="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="m2.ihm.MainController">
   <children>
       <VBox prefHeight="759.0" prefWidth="800.0">
          <children>
-            <SplitPane dividerPositions="0.3" prefHeight="459.0" prefWidth="800.0">
+            <SplitPane dividerPositions="0.3, 0.8" prefHeight="459.0" prefWidth="800.0">
                <items>
-                  <ScrollPane fx:id="listPane" prefHeight="450.0" prefWidth="265.0" SplitPane.resizableWithParent="false">
+                  <ScrollPane fx:id="listPane" minWidth="250.0" prefHeight="450.0" prefWidth="265.0" SplitPane.resizableWithParent="false">
                      <content>
                         <ListView fx:id="list" prefHeight="453.0" prefWidth="239.0" />
                      </content>
                   </ScrollPane>
-                  <ScrollPane prefHeight="200.0" prefWidth="200.0" SplitPane.resizableWithParent="false">
+                  <ScrollPane minWidth="550.0" prefHeight="448.0" prefWidth="287.0" SplitPane.resizableWithParent="false">
                      <content>
                         <TextArea fx:id="trace" prefHeight="448.0" prefWidth="551.0" />
                      </content></ScrollPane>
+                  <ScrollPane minWidth="200.0" prefHeight="200.0" prefWidth="200.0" SplitPane.resizableWithParent="false">
+                     <content>
+                        <ListView fx:id="images" prefHeight="443.0" prefWidth="248.0" />
+                     </content>
+                  </ScrollPane>
                </items>
             </SplitPane>
             <HBox prefHeight="155.0" prefWidth="800.0">
