@@ -1,4 +1,7 @@
 package m2.model;
+
+import java.awt.image.BufferedImage;
+import java.util.List;
 /**
  * 
  * @author DESCHAMPS Mathieu && ESNAULT Jeremie
@@ -11,14 +14,16 @@ public class Model {
 	private int nKoTest;
 	private int nIgnoredTest;
 	private String executionTrace;
-	
-	public Model ( String fileName, int nOkTests, int nKoTests, int nIgnoredTests, String trace )
+	private List<BufferedImage> images;
+
+	public Model ( String fileName, int nOkTests, int nKoTests, int nIgnoredTests, String trace, List<BufferedImage> images)
 	{
 		this.fileName = fileName;
 		this.nOkTest = nOkTests;
 		this.nKoTest = nKoTests;
 		this.nIgnoredTest = nIgnoredTests;
-		this.executionTrace = trace;	
+		this.executionTrace = trace;
+		this.images = images;
 	}
 
 	public String getFileName() {
@@ -41,5 +46,9 @@ public class Model {
 		return executionTrace;
 	}
 	
+	public List<BufferedImage> getImages() {
+		return images;
+	}
+
 
 }

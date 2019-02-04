@@ -1,12 +1,10 @@
 package m2.vv.code_coverage;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
@@ -15,20 +13,14 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Stack;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-import javassist.bytecode.MethodInfo;
-import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 import m2.utils.ConsoleUtils;
@@ -126,7 +118,7 @@ public class TraceFunctionCall {
 			e1.printStackTrace();
 		}
 
-		for (String classFile : classList) {
+		for (String classFile : classList){
 			if (testList.contains(classFile + "Test")) {
 				try {
 					CtMethod[] classMethods;
@@ -172,13 +164,15 @@ public class TraceFunctionCall {
 			System.out.println(String.format("| IGNORED: %d", result.getIgnoreCount()));
 			System.out.println(String.format("| FAILURES: %d", result.getFailureCount()));
 			System.out.println(String.format("| RUN: %d", result.getRunCount()));
+			List<BufferedImage> imageTrace = new ArrayList<>();
 			String toDot = "";
 			for (Graph<MethodModel> graph : graphedTrace) {
 				toDot += graph.toDot();
+				imageTrace.add(graph.toImage());
 			}
 			System.out.println("GRAPH:\n" + toDot);
 			Model model = new Model(test, result.getRunCount(), result.getFailureCount(), result.getIgnoreCount(),
-					toDot);
+					toDot, imageTrace);
 			this.projectModel.addModel(model);
 		}
 	}
@@ -220,7 +214,6 @@ public class TraceFunctionCall {
 
 	/**
 	 * Find all called methods from methods and made edges
-	 * 
 	 * @param methods
 	 * @return
 	 */

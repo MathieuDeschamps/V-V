@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RecursiveTest {
+public class RecursiveOpTest {
 	
 	RecursiveOp rec;
 
@@ -16,7 +16,6 @@ public class RecursiveTest {
 		rec = new RecursiveOp();
 		
 	}
-	
 	
 	
 	@Test

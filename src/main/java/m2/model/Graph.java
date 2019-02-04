@@ -55,7 +55,8 @@ public class Graph<T> {
 	 * @return the BufferedImage
 	 */
 	public BufferedImage toImage( )
-	{
+	{		
+		//return null;
 		return Graphviz.fromString( this.toString( ) ).render(Format.PNG).toImage();
 	}
 }
