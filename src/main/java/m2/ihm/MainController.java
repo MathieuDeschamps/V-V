@@ -101,6 +101,25 @@ public class MainController {
 			pie.getData().add( new PieChart.Data("OK", model.getnOkTest()));
 			pie.getData().add( new PieChart.Data("KO", model.getnKoTest()));
 			pie.getData().add( new PieChart.Data("Ignored", model.getnIgnoredTest()));
+			
+			for(PieChart.Data data :pie.getData()) {
+				switch (data.getName()) {
+				case "OK":
+					// set color green
+					data.getNode().setStyle("-fx-pie-color: #08cf54;");
+					break;
+				case "KO":
+					data.getNode().setStyle("-fx-pie-color: #1c4174;");
+					// set color blue
+					break;
+				case "Ignored":
+					// set color red
+					data.getNode().setStyle("-fx-pie-color: #9f3f3f;");
+					break;
+				default:
+					break;
+				}
+			}
 		});
 		
 		images.getSelectionModel().selectedItemProperty().addListener( obs -> {
