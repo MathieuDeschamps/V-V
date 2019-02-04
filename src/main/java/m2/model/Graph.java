@@ -23,6 +23,12 @@ public class Graph<T> {
 		name = "untitled";
 	}
 	
+	
+	
+	public String getName() {
+		return name;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -46,7 +52,7 @@ public class Graph<T> {
 			result += '"' + edge.getSecondNode().getValue().toString() + '"';
 			result += ";\n";
 		}
-		result += "\n}";
+		result += "}\n";
 		return result;
 	}
 	
@@ -56,7 +62,7 @@ public class Graph<T> {
 	 */
 	public BufferedImage toImage( )
 	{		
-		//return null;
-		return Graphviz.fromString( this.toString( ) ).render(Format.PNG).toImage();
+		return null;
+		//return Graphviz.fromString( this.toString( ) ).render(Format.PNG).toImage();
 	}
 }

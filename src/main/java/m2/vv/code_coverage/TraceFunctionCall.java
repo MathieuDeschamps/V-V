@@ -12,7 +12,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -156,7 +159,7 @@ public class TraceFunctionCall {
 			ConsoleUtils.redirect(oldPrintStream);
 
 			trace = readTrace(outputFile);
-			System.out.println(trace);
+			//System.out.println(trace);
 			ParseFunctionCall parser = new ParseFunctionCall(allEdges, trace);
 			List<Graph<MethodModel>> graphedTrace = parser.process();
 
@@ -164,11 +167,11 @@ public class TraceFunctionCall {
 			System.out.println(String.format("| IGNORED: %d", result.getIgnoreCount()));
 			System.out.println(String.format("| FAILURES: %d", result.getFailureCount()));
 			System.out.println(String.format("| RUN: %d", result.getRunCount()));
-			List<BufferedImage> imageTrace = new ArrayList<>();
+			Map<String, BufferedImage> imageTrace = new HashMap<>();
 			String toDot = "";
 			for (Graph<MethodModel> graph : graphedTrace) {
 				toDot += graph.toDot();
-				imageTrace.add(graph.toImage());
+				imageTrace.put(graph.getName(), graph.toImage());
 			}
 			System.out.println("GRAPH:\n" + toDot);
 			Model model = new Model(test, result.getRunCount(), result.getFailureCount(), result.getIgnoreCount(),
