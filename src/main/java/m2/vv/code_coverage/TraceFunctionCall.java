@@ -123,20 +123,18 @@ public class TraceFunctionCall {
 			e1.printStackTrace();
 		}
 
-		for (String classFile : classList){
-			if (testList.contains(classFile + "Test")) {
-				try {
-					CtMethod[] classMethods;
-					CtClass currentClass = pool.get(classFile);
-					classMethods = currentClass.getDeclaredMethods();
+		for (String classFile : classList) {
+			try {
+				CtMethod[] classMethods;
+				CtClass currentClass = pool.get(classFile);
+				classMethods = currentClass.getDeclaredMethods();
 
-					allEdges.addAll(findEdges(classMethods));
-					// trace is call after build graph otherwise return error
-					trace(currentClass, folder, PRE_CLASS + "");
-				} catch (NotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				allEdges.addAll(findEdges(classMethods));
+				// trace is call after build graph otherwise return error
+				trace(currentClass, folder, PRE_CLASS + "");
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 

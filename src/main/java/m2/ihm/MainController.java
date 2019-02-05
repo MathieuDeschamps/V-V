@@ -104,12 +104,12 @@ public class MainController {
 					data.getNode().setStyle("-fx-pie-color: #08cf54;");
 					break;
 				case "KO":
-					data.getNode().setStyle("-fx-pie-color: #1c4174;");
+					data.getNode().setStyle("-fx-pie-color: #083370;");
 					// set color blue
 					break;
 				case "Ignored":
 					// set color red
-					data.getNode().setStyle("-fx-pie-color: #9f3f3f;");
+					data.getNode().setStyle("-fx-pie-color: #CA1625;");
 					break;
 				default:
 					break;
