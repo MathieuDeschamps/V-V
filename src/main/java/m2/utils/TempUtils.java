@@ -55,17 +55,17 @@ public class TempUtils {
 		 String home = System.getProperty("user.home");
 		 try {
 			 
-			 FileUtils.copyDirectory(new File(projectPath+"/target"), new File(home+"/tmp"+projectPath));
+			 FileUtils.copyDirectory(new File(projectPath+"/target"), new File(home+"/tmpVV"+projectPath+"/target"));
 			 System.out.println("cp -R "+projectPath+"/target "+home+"/tmp"+projectPath);
-			Runtime.getRuntime().exec("cp -R "+projectPath+"/target "+home+"/tmp"+projectPath);
+			//Runtime.getRuntime().exec("cp -R "+projectPath+"/target "+home+"/tmpVV"+projectPath);
 		} catch (IOException e) {
 			throw new CopyException( e.getMessage( ) );
 			
 		}
 		
 		
-		this.copyPath = home+"/tmp"+projectPath;
-		return home+"/tmp"+projectPath;
+		this.copyPath = home+"/tmpVV"+projectPath;
+		return home+"/tmpVV"+projectPath;
 	}
 	
 	/**
@@ -76,7 +76,7 @@ public class TempUtils {
 		
 		try {
 			System.out.println(copyPath);
-			Runtime.getRuntime().exec("rm -R "+this.copyPath );
+			Runtime.getRuntime().exec("rm -R "+System.getProperty("user.home")+"/tmpVV" );
 		} catch (IOException e) {
 			throw new DeleteTmpException( e.getMessage( ) );
 		}

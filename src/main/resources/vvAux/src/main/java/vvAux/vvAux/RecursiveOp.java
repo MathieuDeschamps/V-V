@@ -12,4 +12,5 @@ public class RecursiveOp {
 			       ? 1
 			       : nb * factorielle(nb - 1);
 	}
+
 }

@@ -73,6 +73,8 @@ public class TraceFunctionCall {
 		}
 		String classTarget = projectPath + "/target/classes";
 		File classesDirectory = new File(classTarget);
+		System.out.println("exist: "+classesDirectory.exists()+" "+classTarget);
+		System.out.println("dir: "+ classesDirectory.isDirectory());
 		if (!(classesDirectory.exists() && classesDirectory.isDirectory())) {
 
 			System.out.println("Target classes are missing");
@@ -278,6 +280,11 @@ public class TraceFunctionCall {
 		}
 		String content = builder.toString();
 		return content;
+	}
+
+	public void setProjectModel(ProjectModel projectModel) {
+		this.projectModel = projectModel;
+		
 	}
 
 	

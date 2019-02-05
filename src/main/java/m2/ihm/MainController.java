@@ -1,14 +1,10 @@
 package m2.ihm;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
@@ -22,7 +18,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -139,6 +134,14 @@ public class MainController {
 		
 		loadButton.setOnAction( (event)->{			
 						
+			try {
+				tempUtils.deleteCopy();
+			} catch (DeleteTmpException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			
 			File dir = dirChooser.showDialog(stage);
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setHeight(800);
