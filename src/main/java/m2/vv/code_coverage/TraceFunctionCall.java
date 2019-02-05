@@ -45,6 +45,8 @@ public class TraceFunctionCall {
 	public final static char SEP_CLASS_METHOD = '+';
 	// Separator between method call
 	public final static char SEP_METHOD_CALL = '\n';
+	
+	public final static char PRE_EXIT_METHOD = '<';
 
 	private ProjectModel projectModel;
 	private List<Edge<MethodModel>> allEdges;
@@ -193,11 +195,13 @@ public class TraceFunctionCall {
 
 		CtMethod[] methods = aClass.getDeclaredMethods();
 		for (CtMethod method : methods) {
-			String instructionLogin = String.format("{System.out.println(\"%s\");}",
+			String instructionBefore = String.format("{System.out.println(\"%s\");}",
 					prefixe + aClass.getName() + SEP_CLASS_METHOD + method.getName());
-
+			
+			String instructionAfter = String.format("{System.out.println(\"%s\");}", PRE_EXIT_METHOD);
 			try {
-				method.insertBefore(instructionLogin);
+				method.insertBefore(instructionBefore);
+				method.insertAfter(instructionAfter);
 			} catch (CannotCompileException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

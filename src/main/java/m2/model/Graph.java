@@ -16,8 +16,7 @@ public class Graph<T> {
 	
 	private String name;
 	private List<Edge<T>> edges;
-	int numberEdge =1;
-
+	
 	public Graph() {
 		super();
 		edges = new ArrayList<>();
@@ -43,7 +42,7 @@ public class Graph<T> {
 		String result = "digraph ";
 		result += this.name;
 		result += "{\n";
-		numberEdge =1;
+		int numberEdge =1;
 		for(Edge edge : edges) {
 			result +=  '"' + edge.getFirstNode().getValue().toString() + '"';
 			if(edge.isOriented()) {
