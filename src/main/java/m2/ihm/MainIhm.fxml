@@ -88,6 +88,11 @@
                      </HBox.margin>
                   </VBox>
                   <PieChart fx:id="pie" prefHeight="150.0" prefWidth="294.0" />
+                  <Label fx:id="loading" prefHeight="146.0" prefWidth="210.0" text="Loading..">
+                     <font>
+                        <Font size="44.0" />
+                     </font>
+                  </Label>
                </children>
             </HBox>
          </children>
