@@ -98,8 +98,8 @@ public class MainController {
 			//pie = new PieChart();
 			pie.getData().clear();
 			pie.getData().add( new PieChart.Data("OK", model.getnOkTest()));
-			pie.getData().add( new PieChart.Data("KO", 2));
-			pie.getData().add( new PieChart.Data("Ignored", 3));
+			pie.getData().add( new PieChart.Data("KO", model.getnKoTest()));
+			pie.getData().add( new PieChart.Data("Ignored", model.getnIgnoredTest()));
 			
 			for(PieChart.Data data :pie.getData()) {
 				switch (data.getName()) {
