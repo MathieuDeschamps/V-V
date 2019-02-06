@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -57,6 +58,8 @@ public class MainController {
 	TextArea trace;
 	@FXML
 	PieChart pie;
+	@FXML
+	Label loading;
 	
 	private Stage stage;
 	final DirectoryChooser dirChooser =  new DirectoryChooser();
@@ -69,6 +72,7 @@ public class MainController {
 	@FXML
 	private void initialize(){
 		
+		loading.setText("");
 		projectModel = new ProjectModel();
 		traceFunction = new TraceFunctionCall(projectModel);
 		tempUtils = new TempUtils();
@@ -133,7 +137,8 @@ public class MainController {
 		});
 		
 		loadButton.setOnAction( (event)->{			
-						
+			loading.setText("Loading..");
+			
 			try {
 				tempUtils.deleteCopy();
 			} catch (DeleteTmpException e1) {
@@ -168,6 +173,7 @@ public class MainController {
 			if( !error )
 			{
 				try {
+					
 					traceFunction.process( tempUtils.getCopyPath( ) );
 					list.getItems().clear();
 					list.getItems().setAll(projectModel.getclassTestNames());
@@ -176,6 +182,7 @@ public class MainController {
 					alert.setContentText("Une erreur est survenue: "+e.getMessage( ) );
 				}
 			}
+			loading.setText("");
 		});
 	}
 
