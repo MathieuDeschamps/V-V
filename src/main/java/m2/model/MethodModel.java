@@ -1,23 +1,30 @@
 package m2.model;
 
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.NotFoundException;
 import javassist.expr.MethodCall;
 
 public class MethodModel {
 	
 	private String name;
 	private String className;
-	private List<String> parameters;
+	private List<ParameterModel> parameters;
 	private String returnType;
 	
-	public MethodModel(String name, String className, List<String> parameters, String returnType) {
+	public MethodModel(String name, String className, List<ParameterModel> parameters, String returnType) {
 		super();
 		this.name = name;
 		this.className = className;
-		this.parameters = parameters;
+		if(parameters == null) {
+			this.parameters = new ArrayList<>();
+		}else {
+			this.parameters = parameters;
+		}
 		this.returnType = returnType;
 	}
 	
@@ -33,12 +40,16 @@ public class MethodModel {
 	public void setClassName(String className) {
 		this.className = className;
 	}
-	public List<String> getParameters() {
-		return parameters;
+	
+	public void addParameter(ParameterModel parameter) {
+		this.parameters.add(parameter);
 	}
-	public void setParameters(List<String> parameters) {
-		this.parameters = parameters;
+	
+	public ParameterModel parameterAt(int index) {
+		assert index >= 0 && index < parameters.size();
+		return parameters.get(index);		
 	}
+	
 	public String getReturnType() {
 		return returnType;
 	}
@@ -68,28 +79,72 @@ public class MethodModel {
 	public static  MethodModel parseMethodModel(CtMethod m) {
 		String name = m.getName();
 		String className = m.getDeclaringClass().getName();
-		List<String> parameters = new ArrayList<String>();
-		String returnType = "";
-		
+		List<ParameterModel> parameters = new ArrayList<ParameterModel>();
+		ParameterModel newParameter = new ParameterModel();
+		try {
+			for(CtClass parameter: m.getParameterTypes()) {
+				newParameter.setType(parameter.getName());
+				parameters.add(newParameter);
+			}
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String returnType = "any";
+		try {
+			returnType = m.getReturnType().toString();
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return new MethodModel(name, className, parameters, returnType);
-		
 	}
 	
 	public static MethodModel parseMethodModel(MethodCall mc) {
-		String name = mc.getMethodName();
-		String className = mc.getClassName();
-		List<String> parameters = new ArrayList<String>();
-		String returnType = "";
-		
-		return new MethodModel(name, className, parameters, returnType);
+		MethodModel method = new MethodModel("unknown", "unknow", null, "any");		
+		try {
+			method = parseMethodModel(mc.getMethod());
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return method;
 	}
 	
 	@Override
 	public String toString() {
 		String result = "";
 		result += name;
+		result += "(";
+		String separator = "";
+		for(ParameterModel parameter: parameters) {
+			result += separator + parameter.getType() + ":" + parameter.getValue();
+			separator = ", ";
+		}
+		result += ")";
 		return result;
 				
+	}
+	
+	public String toDebug() {
+		String result = "";
+		result += name;
+		result += "(";
+		String separator = "";
+		for(ParameterModel parameter: parameters) {
+			result += separator + parameter.getType() + ":" + parameter.getValue();
+			separator = ", ";
+		}
+		result += ")";
+		return result;
+	}
+
+	public void setParameters(List<ParameterModel> parameters) {
+		if(parameters != null) {
+			for(ParameterModel parameter: parameters) {
+				this.parameters.add(parameter);
+			}
+		}
 	}
 	
 }

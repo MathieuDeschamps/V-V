@@ -54,9 +54,17 @@ public class IntStackTest {
 		stack.empiler(1);
 		stack.empiler(1);
 		stack.empiler(1);
-		
 		//la ça plante
 		stack.empiler(1);
+		
+	}
+	
+	@Test(expected=Exception.class)
+	public void testEmpileTroisElemnt() throws Exception{
+		stack.empiler(1);
+		stack.empiler(2);
+		stack.empiler(3);
+		assertEquals(3, stack.getStackSize());
 		
 	}
 

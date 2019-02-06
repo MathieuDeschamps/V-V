@@ -1,4 +1,4 @@
-package m2.vv.code_coverage;
+package m2.code_coverage;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.xalan.trace.TraceManager;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import javassist.CannotCompileException;
@@ -39,12 +40,16 @@ public class TraceFunctionCall {
 	public final static char SEP_SECTION = '#';
 	public final static char PRE_TEST = '*';
 	public final static char PRE_CLASS = '-';
+	public final static char PRE_PARAM = '(';
+	public static final char SEP_TYPE_VALUE = ':';
+	public static final char SEP_PARAM = ',';
+	public static final char END_PARAM = ')';
 	// Separator between package name and class name
 	public final static char SEP_PACK_CLASS = '.';
 	// Separator between class name and method name
 	public final static char SEP_CLASS_METHOD = '+';
 	// Separator between method call
-	public final static char SEP_METHOD_CALL = '\n';
+	public final static char END_METHOD_CALL = '\n';
 	
 	public final static char PRE_EXIT_METHOD = '<';
 
@@ -198,8 +203,11 @@ public class TraceFunctionCall {
 			String instructionBefore = String.format("{System.out.println(\"%s\");}",
 					prefixe + aClass.getName() + SEP_CLASS_METHOD + method.getName());
 			
-			String instructionAfter = String.format("{System.out.println(\"%s\");}", PRE_EXIT_METHOD);
+			instructionBefore += traceParam(method);
+			
+			String instructionAfter = String.format("{System.out.println(\"%s\");}", ""+PRE_EXIT_METHOD);
 			try {
+				
 				method.insertBefore(instructionBefore);
 				method.insertAfter(instructionAfter);
 			} catch (CannotCompileException e) {
@@ -218,6 +226,41 @@ public class TraceFunctionCall {
 			e.printStackTrace();
 		}
 	}
+	
+	private static String traceParam(CtMethod method) {
+		String result = "";
+		CtClass[] types = new CtClass[0];
+		try {
+			types = method.getParameterTypes();
+		} catch (NotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		//System.out.print(method.getName() + " " + method.getSignature() +  " " + types.length + "\n");
+		int i = 0;
+		result +=  String.format("{System.out.print(\"%s\");}", PRE_PARAM) ;
+		for(CtClass type: types) {
+			 if ( types.length == 1 && types[0].isPrimitive()) {
+				 if(i == 0) {
+					 result += String.format("{System.out.print(\"%s\"+ $1 );}", type.getName().toString() + SEP_TYPE_VALUE) ;
+				 }else {
+					 result += String.format("{System.out.print(\"%s\"+ $1);}", SEP_PARAM + type.getName().toString() + SEP_TYPE_VALUE) ;
+				 }
+             } else {
+            	 if(i == 0) {
+					 result += String.format("{System.out.print(\"%s\");}", type.getName().toString() + SEP_TYPE_VALUE) ;
+				 }else {
+					 result += String.format("{System.out.print(\"%s\");}", SEP_PARAM + type.getName().toString() + SEP_TYPE_VALUE) ;
+				 }
+            	 //instructionBefore += "{System.out.println( System.identityHashCode( $args[" + i + "] ) ) ;}" ;
+             }
+			 i++;
+		}
+		result +=  String.format("{System.out.print(\"%s\");}", END_PARAM + "\\" + END_METHOD_CALL) ;
+		
+		return result;
+	}
 
 	/**
 	 * Find all called methods from methods and made edges
@@ -227,7 +270,6 @@ public class TraceFunctionCall {
 	private static List<Edge<MethodModel>> findEdges(CtMethod[] methods) {
 
 		List<Edge<MethodModel>> edges = new ArrayList<>();
-
 		for (CtMethod method : methods) {
 			try {
 				method.instrument(new ExprEditor() {
@@ -286,9 +328,7 @@ public class TraceFunctionCall {
 
 	public void setProjectModel(ProjectModel projectModel) {
 		this.projectModel = projectModel;
-		
 	}
-
 	
 	
 }

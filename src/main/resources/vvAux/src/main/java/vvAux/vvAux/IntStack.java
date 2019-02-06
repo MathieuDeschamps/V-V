@@ -18,7 +18,7 @@ public class IntStack {
 	
 	public void empiler( int val ) throws Exception
 	{
-		System.out.println("size: "+size+" values size: " +values.size());
+		//System.out.println("size: "+size+" values size: " +values.size());
 		if( size > values.size( ) )
 		{
 			values.add(val);

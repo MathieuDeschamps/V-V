@@ -21,13 +21,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import m2.code_coverage.TraceFunctionCall;
 import m2.exceptions.CopyException;
 import m2.exceptions.DeleteTmpException;
 import m2.exceptions.WrongMaevenProjectException;
 import m2.model.Model;
 import m2.model.ProjectModel;
 import m2.utils.TempUtils;
-import m2.vv.code_coverage.TraceFunctionCall;
 
 /**
  * 
