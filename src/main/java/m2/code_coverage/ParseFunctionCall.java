@@ -118,16 +118,19 @@ public class ParseFunctionCall {
 			String methodName = methodLine.substring(beginMethodName);
 
 			MethodModel classMethod = new MethodModel(methodName, className, null, null);
-			MethodModel callingMethod = null;
-			if (!functionCallStack.isEmpty()) {
-				callingMethod = functionCallStack.peek();
-			}
 			return matchEdge(functionCallStack, classMethod);
 		} else {
 			return null;
 		}
 	}
 	
+	/**
+	 * Parse the methodLine to retrieve the list of parameters from methodLine
+	 * 
+	 * @param methodLine
+	 *            the string to parse
+	 * @return the list of parameters with the type and value form methodLine
+	 */
 	private List<ParameterModel> parseParam(String methodLine) {
 		
 		List<ParameterModel> parameters = new ArrayList<>();

@@ -226,7 +226,11 @@ public class TraceFunctionCall {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Add to the string the data from the method about the parameter
+	 * @param method
+	 * @return
+	 */
 	private static String traceParam(CtMethod method) {
 		String result = "";
 		CtClass[] types = new CtClass[0];
@@ -237,7 +241,6 @@ public class TraceFunctionCall {
 			e1.printStackTrace();
 		}
 		
-		//System.out.print(method.getName() + " " + method.getSignature() +  " " + types.length + "\n");
 		int i = 0;
 		result +=  String.format("{System.out.print(\"%s\");}", PRE_PARAM) ;
 		for(CtClass type: types) {
