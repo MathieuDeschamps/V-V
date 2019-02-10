@@ -181,7 +181,10 @@ public class TraceFunctionCall {
 				imageTrace.put(graph.getName(), graph.toImage());
 			}
 			System.out.println("GRAPH:\n" + toDot);
-			Model model = new Model(test, result.getRunCount(), result.getFailureCount(), result.getIgnoreCount(),
+			int ignoredTest = result.getIgnoreCount();
+			int koTest = result.getFailureCount();
+			int okTest = result.getRunCount() - koTest - ignoredTest;
+			Model model = new Model(test, okTest, koTest, ignoredTest,
 					toDot, imageTrace);
 			this.projectModel.addModel(model);
 		}
