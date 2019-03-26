@@ -14,7 +14,7 @@ public class App  extends Application{
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("../ihm/MainIhm.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/m2/ihm/MainIhm.fxml"));
 			Parent root = (Parent) loader.load();
 			Scene scene = new Scene(root,1000,600);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
