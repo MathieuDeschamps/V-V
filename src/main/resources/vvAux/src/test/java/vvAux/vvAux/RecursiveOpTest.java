@@ -24,7 +24,7 @@ public class RecursiveOpTest {
 		
 		int res = rec.factorielle(-1);
 		
-		assertEquals(1, res);
+		assertEquals(0, res);
 		
 	}
 	
@@ -32,7 +32,7 @@ public class RecursiveOpTest {
 	public void positivFact(){
 		
 		int res = rec.factorielle( 3 );
-		assertEquals( 6, res);
+		assertEquals( 5, res);
 		
 	}
 }
